@@ -26,7 +26,7 @@ export default function Journal({ journalEntries = [], onStartQuestSetup, onDele
   };
 
   return (
-    <div style={{ maxWidth: 'var(--max-width)', margin: '120px auto 80px', padding: '0 24px' }}>
+    <div className="journal-page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24, marginBottom: 24 }}>
         <div>
           <span className="editorial-eyebrow">Archive & Field Notes</span>
@@ -77,7 +77,7 @@ export default function Journal({ journalEntries = [], onStartQuestSetup, onDele
                   />
                 </div>
 
-                <div>
+                <div className="journal-row-content">
                   <div className="journal-row-meta">
                     <span>{entry.date}</span>
                     <span>/</span>

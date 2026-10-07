@@ -73,10 +73,11 @@ export default function Header({ onStartQuest, onNavigate, streak, xp }) {
           </span>
         )}
         <button
-          className="btn-editorial btn-solid-light"
+          className="btn-editorial btn-solid-light header-cta-btn"
           onClick={onStartQuest}
         >
-          Start Your Quest
+          <span className="header-cta-full">Start Your Quest</span>
+          <span className="header-cta-short">Start Quest</span>
         </button>
       </div>
     </header>

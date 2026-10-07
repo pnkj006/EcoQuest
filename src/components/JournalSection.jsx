@@ -81,7 +81,7 @@ export default function JournalSection({ journalEntries = [], onStartQuest, onDe
                     />
                   </div>
 
-                  <div>
+                  <div className="journal-row-content">
                     <div className="journal-row-meta">
                       <span>{entry.date}</span>
                       <span>/</span>

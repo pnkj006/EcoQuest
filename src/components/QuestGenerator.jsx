@@ -195,9 +195,8 @@ export default function QuestGenerator({ onStartQuest }) {
             <div className="generator-submit-block">
               <button
                 type="submit"
-                className="btn-editorial btn-solid-dark"
+                className="btn-editorial btn-solid-dark generator-submit-btn"
                 disabled={isGenerating}
-                style={{ minWidth: 260 }}
               >
                 {isGenerating ? 'CREATING YOUR QUEST...' : 'GENERATE MY QUEST →'}
               </button>
@@ -287,7 +286,7 @@ export default function QuestGenerator({ onStartQuest }) {
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', marginTop: 24 }}>
+              <div className="generated-quest-actions">
                 <button
                   type="button"
                   className="btn-editorial btn-outline-dark"

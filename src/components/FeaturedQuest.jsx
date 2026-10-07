@@ -67,7 +67,7 @@ export default function FeaturedQuest({ onStartQuest }) {
             </div>
 
             <button
-              className="btn-editorial btn-solid-light"
+              className="btn-editorial btn-solid-light featured-quest-start-btn"
               onClick={() => onStartQuest(featured)}
             >
               Start This Quest →

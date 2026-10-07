@@ -151,9 +151,8 @@ export default function ActiveQuest({ quest, onCompleteQuest, onContinue, onCanc
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <button
                 type="button"
-                className="btn-editorial btn-solid-light"
+                className="btn-editorial btn-solid-light focus-action-btn"
                 onClick={handleContinueClick}
-                style={{ minWidth: 200 }}
               >
                 CONTINUE
               </button>
@@ -201,9 +200,8 @@ export default function ActiveQuest({ quest, onCompleteQuest, onContinue, onCanc
             <div className="timer-action-row" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
-                className="btn-editorial btn-outline-light"
+                className="btn-editorial btn-outline-light focus-action-btn"
                 onClick={togglePause}
-                style={{ minWidth: 140 }}
                 disabled={secondsRemaining === 0}
               >
                 {isActive ? 'Pause' : 'Start'}
@@ -211,9 +209,8 @@ export default function ActiveQuest({ quest, onCompleteQuest, onContinue, onCanc
 
               <button
                 type="button"
-                className="btn-editorial btn-solid-light"
+                className="btn-editorial btn-solid-light focus-action-btn"
                 onClick={handleComplete}
-                style={{ minWidth: 200 }}
               >
                 COMPLETE QUEST
               </button>
