@@ -62,7 +62,7 @@ export default function Header({ onStartQuest, onNavigate, streak, xp }) {
       </nav>
 
       <div className="header-cta-group">
-        {streak > 0 && (
+        {typeof streak === 'number' && (
           <span className="streak-indicator-subtle" title="Active Outdoor Days">
             {streak} Day Streak
           </span>

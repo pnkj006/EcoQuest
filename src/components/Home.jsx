@@ -19,10 +19,10 @@ export default function Home({
 
   const streak = appData.streak ?? 0;
 
-  // Compute dynamic stats blending with realistic benchmark
-  const displayQuestsCount = (1240 + questsCompleted).toLocaleString();
-  const displayMinutes = ((8400 + timeOutsideMinutes) / 1000).toFixed(1) + 'K';
-  const displayDays = 24 + (completedDates.length > 7 ? completedDates.length - 7 : 0);
+  // Dynamic user stats
+  const displayQuestsCount = questsCompleted.toLocaleString();
+  const displayMinutes = timeOutsideMinutes.toLocaleString();
+  const displayDays = streak.toLocaleString();
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -96,7 +96,7 @@ export default function Home({
             <div className="stat-item-editorial">
               <div className="stat-number-large">{displayQuestsCount}</div>
               <div className="stat-label-editorial">Outdoor Quests</div>
-              <p className="stat-description-editorial">Completed by curious explorers worldwide</p>
+              <p className="stat-description-editorial">Completed outdoor quests logged</p>
             </div>
 
             <div className="stat-item-editorial">
@@ -108,7 +108,7 @@ export default function Home({
             <div className="stat-item-editorial">
               <div className="stat-number-large">{displayDays}</div>
               <div className="stat-label-editorial">Nature Days</div>
-              <p className="stat-description-editorial">Active streak days recorded this season</p>
+              <p className="stat-description-editorial">Active streak days recorded</p>
             </div>
           </div>
         </div>
