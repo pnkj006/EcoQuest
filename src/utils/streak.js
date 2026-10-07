@@ -6,10 +6,17 @@
 
 /**
  * Format a Date object into local YYYY-MM-DD string
+ * Avoids UTC timezone conversion shifts for pre-formatted strings
  * @param {Date|string|number} date
  * @returns {string}
  */
 export const formatDateKey = (date = new Date()) => {
+  if (typeof date === 'string') {
+    const trimmed = date.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return trimmed;
+    }
+  }
   const d = new Date(date);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -27,42 +34,42 @@ export const calculateStreak = (completedDates = []) => {
     return 0;
   }
 
-  const dateSet = new Set(completedDates);
+  // Normalize all date strings and place into a fast-lookup Set
+  const dateSet = new Set(
+    completedDates
+      .filter(Boolean)
+      .map(d => formatDateKey(d))
+  );
+
   const today = new Date();
+  today.setHours(12, 0, 0, 0); // Noon anchor prevents DST boundary crossing
   const todayKey = formatDateKey(today);
 
-  // Check if today is completed
-  let hasToday = dateSet.has(todayKey);
+  const hasToday = dateSet.has(todayKey);
 
-  // If today is completed, streak starts at today and checks backwards
-  // If today is NOT completed, check if yesterday was completed to keep streak alive
   let checkDate = new Date(today);
   let streak = 0;
 
   if (hasToday) {
+    // Today is completed -> counts as day 1 of the active streak
     streak = 1;
-    // Walk backward day by day starting from yesterday
+    // Walk backward starting from yesterday
     checkDate.setDate(checkDate.getDate() - 1);
+    while (dateSet.has(formatDateKey(checkDate))) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
   } else {
-    // Check yesterday
+    // Today is not completed yet -> check if yesterday was completed to keep streak alive
     checkDate.setDate(checkDate.getDate() - 1);
     const yesterdayKey = formatDateKey(checkDate);
     if (!dateSet.has(yesterdayKey)) {
-      return 0;
+      return 0; // Missed yesterday and not completed today -> streak is 0
     }
-    streak = 1;
-    // Walk backward starting from 2 days ago
-    checkDate.setDate(checkDate.getDate() - 1);
-  }
-
-  // Continue checking previous days
-  while (true) {
-    const key = formatDateKey(checkDate);
-    if (dateSet.has(key)) {
+    // Walk backward starting from yesterday
+    while (dateSet.has(formatDateKey(checkDate))) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
-    } else {
-      break;
     }
   }
 
@@ -75,8 +82,9 @@ export const calculateStreak = (completedDates = []) => {
  * @returns {Array<{ label: string, dateKey: string, isToday: boolean, isCompleted: boolean }>}
  */
 export const getWeeklyStreakStatus = (completedDates = []) => {
-  const completedSet = new Set(completedDates || []);
+  const completedSet = new Set((completedDates || []).filter(Boolean).map(d => formatDateKey(d)));
   const now = new Date();
+  now.setHours(12, 0, 0, 0);
   const currentDayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
   
   // Diff to Monday (Mon=0, Tue=1, ..., Sun=6)
@@ -84,7 +92,7 @@ export const getWeeklyStreakStatus = (completedDates = []) => {
   
   const monday = new Date(now);
   monday.setDate(now.getDate() - diffToMonday);
-  monday.setHours(0, 0, 0, 0);
+  monday.setHours(12, 0, 0, 0);
 
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const weekDays = [];
@@ -114,7 +122,15 @@ export const getWeeklyStreakStatus = (completedDates = []) => {
  * @returns {string[]}
  */
 export const addCompletedDate = (existingDates = [], dateToAdd = formatDateKey(new Date())) => {
-  const set = new Set(existingDates);
-  set.add(dateToAdd);
+  const keyToAdd = formatDateKey(dateToAdd);
+  const set = new Set();
+  if (Array.isArray(existingDates)) {
+    for (const d of existingDates) {
+      if (d) {
+        set.add(formatDateKey(d));
+      }
+    }
+  }
+  set.add(keyToAdd);
   return Array.from(set).sort();
 };

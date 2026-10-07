@@ -39,13 +39,14 @@ export const getLevelInfo = (xp = 0) => {
 };
 
 /**
- * Generate relative past dates for realistic initial state (6-day streak)
+ * Generate relative past dates for realistic initial state (7-day streak through yesterday)
  */
-const generateInitialCompletedDates = () => {
+export const generateInitialCompletedDates = () => {
   const dates = [];
   const today = new Date();
-  // Fill the previous 6 days (excluding today, so today is ready to be conquered!)
-  for (let i = 6; i >= 1; i--) {
+  today.setHours(12, 0, 0, 0);
+  // Fill the previous 7 days through yesterday (excluding today, so today is ready to be conquered!)
+  for (let i = 7; i >= 1; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     dates.push(formatDateKey(d));
@@ -66,7 +67,7 @@ const getInitialState = () => {
   return {
     completedDates,
     natureXP: 450,
-    questsCompleted: 6,
+    questsCompleted: 7,
     timeOutsideMinutes: 110,
     todayQuest: null, // Initially not created or ready to create
     journalEntries: [
@@ -75,10 +76,11 @@ const getInitialState = () => {
         date: formatDateDisplay(1),
         questTitle: 'Golden Hour Pine Scout',
         environment: 'Park',
+        difficulty: 'Easy',
         durationMinutes: 20,
         reflection: 'Found three fallen pine cones of distinctly different sizes and observed how the evening sun lit up the tree canopy. Felt completely unplugged.',
         bonusCompleted: true,
-        xpEarned: 125,
+        xpEarned: 20,
         photo: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1000&q=80'
       },
       {
@@ -86,10 +88,11 @@ const getInitialState = () => {
         date: formatDateDisplay(2),
         questTitle: 'Urban Stone & Lichen Hunt',
         environment: 'Urban',
+        difficulty: 'Medium',
         durationMinutes: 15,
         reflection: 'Discovered vibrant mint green lichen growing on an old stone wall right near the crosswalk. Walked by it a hundred times before and never looked.',
         bonusCompleted: false,
-        xpEarned: 100,
+        xpEarned: 15,
         photo: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=80'
       },
       {
@@ -97,10 +100,11 @@ const getInitialState = () => {
         date: formatDateDisplay(3),
         questTitle: 'Breeze & Canopy Listening',
         environment: 'Nature',
+        difficulty: 'Easy',
         durationMinutes: 25,
         reflection: 'Left my phone in my pocket the whole walk. Counted four distinct bird calls and watched a squirrel hide acorns.',
         bonusCompleted: true,
-        xpEarned: 125,
+        xpEarned: 25,
         photo: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=1000&q=80'
       }
     ]
@@ -119,11 +123,26 @@ export const loadAppData = () => {
       return initial;
     }
     const parsed = JSON.parse(stored);
-    // Ensure all critical fields exist
+    
+    // Normalize stored completedDates
+    let completedDates = Array.isArray(parsed.completedDates) && parsed.completedDates.length > 0
+      ? parsed.completedDates.map(d => formatDateKey(d))
+      : generateInitialCompletedDates();
+
+    // If existing localStorage had the legacy 6-day mock streak, heal the 7th past day
+    // so a user with an existing streak through yesterday gets 8 today
+    const initial7 = generateInitialCompletedDates();
+    const hasLegacy6 = initial7.slice(1).every(d => completedDates.includes(d));
+    if (hasLegacy6 && !completedDates.includes(initial7[0])) {
+      completedDates = addCompletedDate(completedDates, initial7[0]);
+      parsed.completedDates = completedDates;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+
     return {
-      completedDates: Array.isArray(parsed.completedDates) ? parsed.completedDates : generateInitialCompletedDates(),
+      completedDates,
       natureXP: typeof parsed.natureXP === 'number' ? parsed.natureXP : 450,
-      questsCompleted: typeof parsed.questsCompleted === 'number' ? parsed.questsCompleted : 6,
+      questsCompleted: typeof parsed.questsCompleted === 'number' ? parsed.questsCompleted : 7,
       timeOutsideMinutes: typeof parsed.timeOutsideMinutes === 'number' ? parsed.timeOutsideMinutes : 110,
       todayQuest: parsed.todayQuest || null,
       journalEntries: Array.isArray(parsed.journalEntries)

@@ -22,7 +22,7 @@ export default function Home({
   // Compute dynamic stats blending with realistic benchmark
   const displayQuestsCount = (1240 + questsCompleted).toLocaleString();
   const displayMinutes = ((8400 + timeOutsideMinutes) / 1000).toFixed(1) + 'K';
-  const displayDays = 24 + (completedDates.length > 6 ? completedDates.length - 6 : 0);
+  const displayDays = 24 + (completedDates.length > 7 ? completedDates.length - 7 : 0);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
